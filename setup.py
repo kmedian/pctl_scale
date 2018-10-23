@@ -22,6 +22,7 @@ setup(name='pctl_scale',
       packages=['pctl_scale'],
       install_requires=[
           'setuptools>=40.0.0',
+          'scikit-learn>=0.19.2',
           'numpy>=1.14.5'],
       python_requires='>=3.6',
       zip_safe=False)
