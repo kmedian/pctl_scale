@@ -64,3 +64,28 @@ def percentile_scale(x, a=.05, b=.95, naignore=[0], naimpute=0):
     z[idxmiss] = naimpute
 
     return z, va, vb
+
+
+def inverse_ztoy_upper(z, b):
+    oneminusb = 1 - b
+    return b - oneminusb * np.log(((b / z) - b) / oneminusb)
+
+
+def inverse_ztoy_lower(z, a):
+    return a * (np.log(z / a) + 1)
+
+
+def inverse(z, a, b, va, vb):
+    # the linear case z=y (nothing to inverse. just copy)
+    y = z.copy()
+
+    # inverse z below threshold a
+    idx = z < a
+    y[idx] = inverse_ztoy_lower(z[idx], a)
+
+    # inverse z above threshold b
+    idx = z > b
+    y[idx] = inverse_ztoy_upper(z[idx], b)
+
+    # inverse the min-max scaling y to x
+    return ((y - a) / b) * (vb - va) + va

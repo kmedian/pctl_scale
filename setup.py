@@ -7,7 +7,7 @@ def read(fname):
 
 
 setup(name='pctl_scale',
-      version='0.1.0',
+      version='0.1.1',
       description=(
           "Scale a variable into an open interval (0,1) whereas values "
           "within a given lower and upper percentile maintain a linear "

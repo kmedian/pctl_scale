@@ -30,6 +30,7 @@ Check the [examples](examples) folder for notebooks.
 
 ## Commands
 * Check syntax: `flake8 --ignore=F401`
+* Run Unit Tests: `python -W ignore -m unittest discover`
 * Remove `.pyc` files: `find . -type f -name "*.pyc" | xargs rm`
 * Remove `__pycache__` folders: `find . -type d -name "__pycache__" | xargs rm -rf`
 * Upload to PyPi with twine: `python setup.py sdist && twine upload -r pypi dist/*`

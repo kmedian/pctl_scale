@@ -1,6 +1,7 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 from .pctl_scale_func import (
-    saturate_upper_to_one, saturate_lower_to_zero, check_ignore)
+    saturate_upper_to_one, saturate_lower_to_zero, check_ignore,
+    inverse)
 import numpy as np
 
 
@@ -52,3 +53,7 @@ class PercentileScaler(BaseEstimator, TransformerMixin):
 
         # done
         return z
+
+    def inverse_transform(self, X, y=None):
+        return inverse(
+            X, self.lower, self.upper, self.pctl_lower, self.pctl_upper)
