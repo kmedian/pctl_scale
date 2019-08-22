@@ -1,34 +1,36 @@
 import numpy as np
 
 
-def saturate_upper_to_one(x, u):
-    t = x - u
-    k = 1 / (1 - u)
-    return u / (u + (1 - u) * np.exp(-t * k))
+def saturate_upper_to_one(x, b):
+    t = x - b
+    k = 1 / (1 - b)
+    return b / (b + (1 - b) * np.exp(-t * k))
 
 
-def saturate_lower_to_zero(x, d):
-    t = d - x
-    k = 1 / d
-    return d / np.exp(t * k)
+def saturate_lower_to_zero(x, a):
+    t = a - x
+    k = 1 / a
+    return a / np.exp(t * k)
 
 
-def percentile_scale_clean(x, d=.05, u=.95):
+def percentile_scale_clean(x, a=.05, b=.95):
     # compute upper and lower pctl values
-    vd, vu = np.percentile(x, q=(d * 100, u * 100))
+    va, vb = np.percentile(x, q=(a * 100, b * 100))
 
-    # scale x=[vd,vu] to y=[d,u]
-    to1 = (x - vd) / (vu - vd)
-    y = d + u * to1
+    # scale x=[va,vu] to y=[a,b]
+    to1 = (x - va) / (vb - va)
+    y = a + b * to1
 
-    # saturate upper values to [u,1]
-    y[y > u] = saturate_upper_to_one(y[y > u], u)
+    # saturate upper values to [b,1]
+    idx = y > b
+    y[idx] = saturate_upper_to_one(y[idx], b)
 
-    # fit lower values to [0,d]
-    y[y < d] = saturate_lower_to_zero(y[y < d], d)
+    # fit lower values to [0,a]
+    idx = y < a
+    y[idx] = saturate_lower_to_zero(y[idx], a)
 
     # done
-    return y, vd, vu
+    return y, va, vb
 
 
 def check_ignore(e, naignore=[]):
@@ -48,17 +50,17 @@ def check_ignore(e, naignore=[]):
     return False
 
 
-def percentile_scale(x, d=.05, u=.95, naignore=[0], naimpute=0):
+def percentile_scale(x, a=.05, b=.95, naignore=[0], naimpute=0):
     # ensure numpy array
     x_ = np.array(x)
     # memorize ineligible values
     idxmiss = np.array([check_ignore(e, naignore) for e in x_])
     idxexist = np.logical_not(idxmiss)
 
-    y, vd, vu = percentile_scale_clean(x_[idxexist], d=d, u=u)
+    y, va, vb = percentile_scale_clean(x_[idxexist], a=a, b=b)
 
     z = np.empty(shape=x_.shape)
     z[idxexist] = y
     z[idxmiss] = naimpute
 
-    return z, vd, vu
+    return z, va, vb
